@@ -1,5 +1,5 @@
-import {cart} from '../data/cart'
-import {products} from '../data/products'
+import {cart, addToCart} from '../data/cart.js'
+import products from '../data/products.js'
 
 let productsHTML = '';
 
@@ -56,6 +56,24 @@ products.forEach((product) => {
 
 document.querySelector('.products-grid').innerHTML = productsHTML;
 
+function updateCartQuantity(productId, quantity) {
+   let cartQuantity = 0;
+
+   cart.forEach((item) => {
+      cartQuantity += item.quantity
+   })
+
+   const addedToCartElement = document.querySelector(`.js-added-to-cart-${productId}`);
+
+   addedToCartElement.classList.add('added-to-cart-visible')
+
+   setTimeout(() => {
+      addedToCartElement.classList.remove('added-to-cart-visible')
+   }, 2000)
+
+   document.querySelector('.js-cart-quantity').innerHTML = cartQuantity;
+}
+
 document.querySelectorAll('.js-add-to-cart-button').forEach((button) => {
    button.addEventListener('click', () => {
 
@@ -63,37 +81,9 @@ document.querySelectorAll('.js-add-to-cart-button').forEach((button) => {
 
       const quantitySelectorElement = document.querySelector(`.js-quantity-selector-${productId}`)
       let quantity = Number(quantitySelectorElement.value);
-      let matchingItem;
 
-      cart.forEach((item) => {
-         if (item.productId === productId) {
-            matchingItem = item;
-         }
-      });
+      addToCart(productId, quantity);
 
-      if (matchingItem) {
-         matchingItem.quantity += quantity;
-      } else {
-         cart.push({
-            productId,
-            quantity
-         })
-      };
-      
-      let cartQuantity = 0;
-
-      cart.forEach((item) => {
-         cartQuantity += item.quantity
-      })
-
-      const addedToCartElement = document.querySelector(`.js-added-to-cart-${productId}`);
-
-      addedToCartElement.classList.add('added-to-cart-visible')
-
-      setTimeout(() => {
-         addedToCartElement.classList.remove('added-to-cart-visible')
-      }, 2000)
-      
-      document.querySelector('.js-cart-quantity').innerHTML = cartQuantity;
+      updateCartQuantity(productId, quantity);
    })
 })
